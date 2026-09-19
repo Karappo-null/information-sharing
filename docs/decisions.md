@@ -59,7 +59,7 @@
 決定:
 
 - `profiles.role` に `member` と `admin` を保存する。
-- 管理者はTopic削除と、他ユーザーのPost・Comment・画像の編集または削除ができる。
+- 管理者はTopic削除と、他ユーザーのPost・Commentの編集または削除、画像の削除ができる。
 - 初期管理者はSQL Editorから手動で設定する。
 
 確認元:
