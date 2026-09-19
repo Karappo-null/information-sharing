@@ -54,11 +54,11 @@ export default function Home() {
   }
   async function loadPosts(topic: Topic) {
     if (!supabase) return;
-    const { data: postData, error: postError } = await supabase.from("posts").select("id,topic_id,author_id,body,created_at,profiles!posts_author_id_fkey(id,display_name,role),post_images(id,storage_path)").eq("topic_id", topic.id).order("created_at", { ascending: false });
+    const { data: postData, error: postError } = await supabase.from("posts").select("id,topic_id,author_id,body,created_at,profiles(id,display_name,role),post_images(id,storage_path)").eq("topic_id", topic.id).order("created_at", { ascending: false });
     if (postError) return setNotice(postError.message);
     const basePosts = (postData ?? []) as unknown as Omit<Post, "comments">[];
     const ids = basePosts.map((post) => post.id);
-    const { data: commentData, error: commentError } = ids.length === 0 ? { data: [], error: null } : await supabase.from("comments").select("id,post_id,author_id,body,created_at,profiles!comments_author_id_fkey(id,display_name,role)").in("post_id", ids).order("created_at", { ascending: false });
+    const { data: commentData, error: commentError } = ids.length === 0 ? { data: [], error: null } : await supabase.from("comments").select("id,post_id,author_id,body,created_at,profiles(id,display_name,role)").in("post_id", ids).order("created_at", { ascending: false });
     if (commentError) return setNotice(commentError.message);
     const comments = (commentData ?? []) as unknown as Comment[];
     const nextPosts = basePosts.map((post) => ({ ...post, comments: comments.filter((comment) => comment.post_id === post.id)
