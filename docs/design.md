@@ -41,7 +41,7 @@
 | テーブル | 主な列 | 用途 |
 |---|---|---|
 | `profiles` | `id`, `display_name`, `role`, `created_at` | アプリ用の最低限のユーザー情報 |
-| `topics` | `id`, `title`, `description`, `author_id`, `created_at` | 自由な話題 |
+| `topics` | `id`, `title`, `description`, `author_id`, `created_at`, `last_activity_at` | 自由な話題 |
 | `posts` | `id`, `topic_id`, `author_id`, `body`, `created_at` | Topicへの投稿 |
 | `comments` | `id`, `post_id`, `author_id`, `body`, `created_at` | Postへのコメント |
 | `post_images` | `id`, `post_id`, `storage_path`, `created_at` | Storage画像とPostの対応 |
@@ -63,6 +63,7 @@ posts      1 ─ * post_images
 - Topicを削除すると、紐づくPostはDB上で削除される。
 - Postを削除すると、紐づくCommentと画像レコードはDB上で削除される。
 - Storage内の画像ファイルは、画面側で削除操作を行ってからDBレコードを削除する。
+- `topics.last_activity_at` はTopic作成時、Post新規作成時、Comment新規作成時に更新される。編集・削除では更新しない。
 
 ## 認証
 
@@ -123,7 +124,15 @@ RLSは、許可のないデータ操作をDB側で拒否する仕組み。
 
 ### 表示順
 
-- Topicは`created_at`の降順（新しいものが先）で取得する。
+- Topicは`last_activity_at`の降順（新しいものが先）で取得する。
+
+## 画面とナビゲーション
+
+- `/` はホーム。最近更新されたTopicと最近のPostを各最大10件表示する。
+- `/topics` は全Topic一覧。Topic作成はこの画面から行う。
+- `/topics/[id]` はTopic詳細とPost一覧。Post、Comment、画像、編集・削除、投稿用ボトムシートをここで使用する。
+- `/posts` は全Topicを横断したPost一覧。
+- TopicとPostの一覧項目は所属Topicの`/topics/[id]`へ移動する。Post単体ページは作成しない。
 
 ## Post
 

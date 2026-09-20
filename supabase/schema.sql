@@ -12,7 +12,8 @@ create table public.topics (
   title text not null check (char_length(title) between 1 and 100),
   description text check (char_length(description) <= 280),
   author_id uuid not null default auth.uid() references public.profiles(id),
-  created_at timestamptz not null default now()
+  created_at timestamptz not null default now(),
+  last_activity_at timestamptz not null default now()
 );
 create table public.posts (
   id uuid primary key default gen_random_uuid(),
@@ -68,10 +69,27 @@ begin
   return new;
 end;
 $$;
+create or replace function public.touch_topic_activity_from_post()
+returns trigger language plpgsql security definer set search_path = public as $$
+begin
+  update public.topics set last_activity_at = now() where id = new.topic_id;
+  return new;
+end;
+$$;
+create or replace function public.touch_topic_activity_from_comment()
+returns trigger language plpgsql security definer set search_path = public as $$
+begin
+  update public.topics set last_activity_at = now()
+  where id = (select topic_id from public.posts where id = new.post_id);
+  return new;
+end;
+$$;
 create trigger on_auth_user_created after insert on auth.users for each row execute procedure public.handle_new_user();
 create trigger topics_keep_author before update on public.topics for each row execute procedure public.prevent_ownership_change();
 create trigger posts_keep_relationship before update on public.posts for each row execute procedure public.prevent_post_relationship_change();
 create trigger comments_keep_relationship before update on public.comments for each row execute procedure public.prevent_comment_relationship_change();
+create trigger posts_update_topic_activity after insert on public.posts for each row execute procedure public.touch_topic_activity_from_post();
+create trigger comments_update_topic_activity after insert on public.comments for each row execute procedure public.touch_topic_activity_from_comment();
 
 alter table public.profiles enable row level security;
 alter table public.topics enable row level security;
@@ -103,5 +121,6 @@ create policy "Users upload their own post images" on storage.objects for insert
 create policy "Owners and admins delete post images" on storage.objects for delete to authenticated using (bucket_id = 'post-images' and (owner_id = (select auth.uid()::text) or public.is_admin()));
 
 create index posts_topic_created_at_idx on public.posts (topic_id, created_at);
+create index topics_last_activity_at_idx on public.topics (last_activity_at desc);
 create index comments_post_created_at_idx on public.comments (post_id, created_at);
 create index post_images_post_id_idx on public.post_images (post_id);
