@@ -132,7 +132,24 @@ RLSは、許可のないデータ操作をDB側で拒否する仕組み。
 - `/topics` は全Topic一覧。Topic作成はこの画面から行う。
 - `/topics/[id]` はTopic詳細とPost一覧。Post、Comment、画像、編集・削除、投稿用ボトムシートをここで使用する。
 - `/posts` は全Topicを横断したPost一覧。
+- `/search` はTopic、Post、Commentを横断して検索する画面。
 - TopicとPostの一覧項目は所属Topicの`/topics/[id]`へ移動する。Post単体ページは作成しない。
+
+## 検索
+
+### 実装済み
+
+- `/search` でTopicの`title`・`description`、Postの`body`、Commentの`body`を検索する。
+- PostgreSQLの`ilike`を使った単純な部分一致検索であり、英字の大文字・小文字を区別しない。
+- 入力後400ms待ってから検索し、空欄では検索しない。
+- Topicは`last_activity_at`、PostとCommentは`created_at`の新しい順で表示する。
+- Comment結果では、所属Topic、親Postの本文の一部、Comment本文、投稿者、投稿日時を表示する。
+- Topic結果はTopic詳細へ、Post結果は`#post-[postId]`、Comment結果は`#comment-[commentId]`を付けて所属Topic詳細へ移動する。
+- PCでは上部ヘッダー、スマートフォンでは下部の固定ボタンから検索を開ける。Topic詳細のスマートフォン下部には検索と投稿の操作を並べる。
+
+### 制約
+
+- 高度な全文検索、関連度順、検索対象の画像・ユーザー名・メタデータは実装していない。
 
 ## Post
 
