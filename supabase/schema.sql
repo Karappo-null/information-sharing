@@ -99,7 +99,7 @@ alter table public.post_images enable row level security;
 create policy "Authenticated users read profiles" on public.profiles for select to authenticated using (true);
 create policy "Authenticated users read topics" on public.topics for select to authenticated using (true);
 create policy "Authenticated users create topics" on public.topics for insert to authenticated with check (author_id = auth.uid());
-create policy "Authenticated users edit topics" on public.topics for update to authenticated using (true) with check (true);
+create policy "Authors and admins edit topics" on public.topics for update to authenticated using (author_id = auth.uid() or public.is_admin()) with check (author_id = auth.uid() or public.is_admin());
 create policy "Admins delete topics" on public.topics for delete to authenticated using (public.is_admin());
 create policy "Authenticated users read posts" on public.posts for select to authenticated using (true);
 create policy "Authenticated users create posts" on public.posts for insert to authenticated with check (author_id = auth.uid());
@@ -111,6 +111,7 @@ create policy "Authors and admins edit comments" on public.comments for update t
 create policy "Authors and admins delete comments" on public.comments for delete to authenticated using (author_id = auth.uid() or public.is_admin());
 create policy "Authenticated users read image records" on public.post_images for select to authenticated using (true);
 create policy "Post authors add image records" on public.post_images for insert to authenticated with check (exists (select 1 from public.posts where id = post_id and author_id = auth.uid()));
+create policy "Admins add image records" on public.post_images for insert to authenticated with check (public.is_admin());
 create policy "Post authors and admins delete image records" on public.post_images for delete to authenticated using (exists (select 1 from public.posts where id = post_id and (author_id = auth.uid() or public.is_admin())));
 
 insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
