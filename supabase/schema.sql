@@ -4,7 +4,7 @@
 create table public.profiles (
   id uuid primary key references auth.users(id) on delete cascade,
   display_name text not null check (char_length(display_name) between 1 and 30),
-  role text not null default 'member' check (role in ('member', 'admin')),
+  role text not null default 'user' check (role in ('user', 'member', 'admin')),
   created_at timestamptz not null default now()
 );
 create table public.topics (

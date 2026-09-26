@@ -1,6 +1,6 @@
 # 現在の開発状態
 
-最終更新: 2026-09-25
+最終更新: 2026-09-27
 
 ## 現在実装済みの機能
 
@@ -11,7 +11,7 @@
 - Postへの画像添付・削除・拡大表示
 - Post編集画面での画像追加、削除予定、保存前プレビューの取り消し
 - Postへの一段階コメント・編集・削除
-- `member` / `admin` による権限分けとRLS
+- `user` / `member` / `admin` によるロール管理とRLS（現時点で`user`と`member`は同じ一般ユーザー権限）
 - SupabaseのDB、Storage、RLSを作成するSQL
 
 ## 現在作業中の内容
@@ -34,10 +34,11 @@
 - 2026-09-19に`origin/main`の未取り込み2コミットを取り込み、PostとCommentの表示順を新しい順に統一した。取り込み前の変更は`backup-docs-and-profile-query`ブランチにも保存されている。
 - 画像のStorageファイル削除は画面操作で行う。ネットワーク失敗時に孤立ファイルが残る可能性への対策は未実装。
 - Topic更新と、管理者による他ユーザーPostへの画像追加に必要なRLS変更を`supabase/schema.sql`へ反映した。現在使用中のSupabaseプロジェクトへの適用状況は未確認。
+- 新規登録のrole既定値を`user`へ変更し、既存の`member`は開発メンバーの識別として残す。
 
 ## 次に行う予定の作業
 
-Topic編集権限とPost画像機能をブラウザとSupabaseに接続して確認し、Topic更新・管理者画像追加のRLSをSupabaseへ適用する。
+Topic編集権限とPost画像機能をブラウザとSupabaseに接続して確認し、Topic更新・管理者画像追加のRLSとroleのDEFAULT・CHECK変更をSupabaseへ適用する。
 
 ## 確認が必要な事項
 
@@ -46,3 +47,4 @@ Topic編集権限とPost画像機能をブラウザとSupabaseに接続して確
 - 現在のSupabaseプロジェクトで画像・コメントを含む一連の動作を確認済みか
 - `profiles(...)`関係指定の変更をSupabase上で確認済みか
 - Topic更新・管理者向けの`post_images`追加ポリシーを適用済みか
+- `profiles.role`のDEFAULT・CHECK変更を適用済みか

@@ -9,7 +9,7 @@ import type { User } from "@supabase/supabase-js";
 import { ArrowLeft, ArrowRight, ChevronLeft, ChevronRight, ImagePlus, Plus, Search, X } from "lucide-react";
 import { prepareImage, MAX_IMAGE_COUNT } from "@/lib/image";
 
-type Role = "member" | "admin";
+type Role = "user" | "member" | "admin";
 type Profile = { id: string; display_name: string; role: Role };
 type Topic = { id: string; title: string; description: string | null; author_id: string; created_at: string; last_activity_at: string; postCount: number };
 type ImageRecord = { id: string; storage_path: string };

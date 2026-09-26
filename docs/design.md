@@ -1,6 +1,6 @@
 # 現在の詳細設計
 
-最終更新: 2026-09-25
+最終更新: 2026-09-27
 
 ## 情報の扱い
 
@@ -91,8 +91,9 @@ posts      1 ─ * post_images
 
 ### 実装済み
 
-- `profiles.role` は `member` または `admin`。
-- 新規登録者の既定値は `member`。
+- `profiles.role` は `user`、`member`、または`admin`。
+- 新規登録者の既定値は `user`。
+- 既存の`member`は開発メンバーの識別として残す。現時点では`member`と`user`は同じ一般ユーザー権限であり、`admin`だけを管理者として扱う。
 - `public.is_admin()` が、ログイン中のユーザーが管理者かをDB側で判定する。
 - 画面は管理者にのみTopic削除ボタンを表示する。
 - PostとCommentでは、本人または管理者に編集・削除操作を表示する。
